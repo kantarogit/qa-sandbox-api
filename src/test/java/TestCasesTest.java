@@ -1,4 +1,3 @@
-import model.LoginRequestBody;
 import model.getTestCaseResponse.TestCaseResponseModel;
 import model.updateTestCaseRequest.TestCaseUpdateRequestModel;
 import model.updateTestCaseRequest.TestStepUpdateModel;
@@ -23,8 +22,6 @@ public class TestCasesTest {
     public void setup() {
         loginApiClient = new LoginApiClient();
         testCasesApiClient = new TestCasesApiClient();
-
-        LoginRequestBody model = withLoginRequestBody();
 
         String jwtToken = loginApiClient.login(withLoginRequestBody()
                 .setEmail("kantarofilip@gmail.com")
