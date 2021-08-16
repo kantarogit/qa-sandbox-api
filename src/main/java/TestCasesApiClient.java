@@ -15,7 +15,7 @@ public class TestCasesApiClient extends BaseApiClient {
 
     public Response getTestCases() {
         return requestSpecification()
-                  .get("/testcases");
+                .get("/testcases");
     }
 
     public Response updateTestCase(Long testCaseId, TestCaseUpdateRequestModel requestBody) {
@@ -23,5 +23,11 @@ public class TestCasesApiClient extends BaseApiClient {
                 .pathParam("id", testCaseId)
                 .body(requestBody)
                 .put("/testcases/{id}");
+    }
+
+    public Response deleteTestCase(Long testCaseId) {
+        return requestSpecification()
+                .pathParam("id", testCaseId)
+                .delete("/testcases/{id}");
     }
 }

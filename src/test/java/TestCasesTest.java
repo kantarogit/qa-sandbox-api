@@ -12,6 +12,8 @@ import static model.LoginRequestBody.withLoginRequestBody;
 import static model.updateTestCaseRequest.TestCaseUpdateRequestModel.updateRequestModel;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.codehaus.groovy.runtime.InvokerHelper.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public class TestCasesTest {
 
@@ -43,9 +45,26 @@ public class TestCasesTest {
                         .then().assertThat().statusCode(SC_OK));
     }
 
+    @Test
+    public void shouldDeleteAllTestCases() {
+        List<TestCaseResponseModel> testCases = asList(testCasesApiClient.getTestCases()
+                .then()
+                .extract().body().as(TestCaseResponseModel[].class));
+
+        testCases.forEach(testCase ->
+                testCasesApiClient.deleteTestCase(testCase.getId())
+                        .then().assertThat().statusCode(SC_OK));
+
+        testCases = asList(testCasesApiClient.getTestCases()
+                .then()
+                .extract().body().as(TestCaseResponseModel[].class));
+
+        assertThat(testCases.size(), is(0));
+    }
+
     private TestCaseUpdateRequestModel editAllTheFields(TestCaseResponseModel testCase) {
 
-        String newString = "This field previously  had % characters";
+        String newString = "This field previously had % characters";
 
         return updateRequestModel()
                 .setTitle(StringUtils.replace(newString, "%", String.valueOf(testCase.getTitle().length())))
