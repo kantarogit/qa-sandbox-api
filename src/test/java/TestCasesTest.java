@@ -16,7 +16,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 public class TestCasesTest {
-
+    /***************** IMPORTANT *********************************
+     * >>>> REQUIRES AT LEAST ONE TEST CASE CREATED <<<<
+     ************************************************************/
     private LoginApiClient loginApiClient;
     private TestCasesApiClient testCasesApiClient;
 
@@ -25,15 +27,19 @@ public class TestCasesTest {
         loginApiClient = new LoginApiClient();
         testCasesApiClient = new TestCasesApiClient();
 
+        // this should not be kept on github :) better approach some ENV variable or .properties/dotenv file kept locally
         String jwtToken = loginApiClient.login(withLoginRequestBody()
                 .setEmail("kantarofilip@gmail.com")
                 .setPassword("htec123"))
                 .then().extract().path("token").toString();
 
+        // all subsequent calls are going to use this token
         testCasesApiClient.setCustomHeaders("authorization", "Bearer " + jwtToken);
     }
 
     @Test
+    // example of bad test: if no test cases present the action UPDATE wont be even invoked and the test will be marked
+    // as PASSED. Can cause false negative.
     public void shouldBeAbleToEditAllFields() {
 
         List<TestCaseResponseModel> testCases = asList(testCasesApiClient.getTestCases()
@@ -43,9 +49,12 @@ public class TestCasesTest {
         testCases.forEach(testCase ->
                 testCasesApiClient.updateTestCase(testCase.getId(), editAllTheFields(testCase))
                         .then().assertThat().statusCode(SC_OK));
+
+        // when test case updated it is better to check the response in this case or even perform a GET and check updated fields
     }
 
     @Test
+    // same here, without proper setup this case can lead to false negative
     public void shouldDeleteAllTestCases() {
         List<TestCaseResponseModel> testCases = asList(testCasesApiClient.getTestCases()
                 .then()
@@ -62,6 +71,7 @@ public class TestCasesTest {
         assertThat(testCases.size(), is(0));
     }
 
+    // prepare UPDATE request body
     private TestCaseUpdateRequestModel editAllTheFields(TestCaseResponseModel testCase) {
 
         String newString = "This field previously had % characters";
